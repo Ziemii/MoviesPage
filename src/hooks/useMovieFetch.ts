@@ -4,10 +4,12 @@ import { isPersistedState } from "../helpers";
 
 import { useState, useEffect, useCallback } from "react";
 
-export const useMovieFetch = (movieId) => {
+export const useMovieFetch = (movieId: any) => {
   const [state, setState] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  var movieTitle:string = '';
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -17,6 +19,7 @@ export const useMovieFetch = (movieId) => {
 
         const movie = await API.fetchMovie(movieId);
         const credits = await API.fetchCredits(movieId);
+        movieTitle = movie.title
 
         const directors = credits.crew.filter(
           (member) => member.job === "Director"
@@ -33,7 +36,7 @@ export const useMovieFetch = (movieId) => {
       }
     };
 
-    const persistedState = isPersistedState(movieId);
+    const persistedState = isPersistedState(movieTitle);
 
     if (persistedState) {
       setState(persistedState);
@@ -45,7 +48,7 @@ export const useMovieFetch = (movieId) => {
   }, [movieId]);
 
   useEffect(() => {
-    sessionStorage.setItem(movieId, JSON.stringify(state));
+    sessionStorage.setItem(movieTitle, JSON.stringify(state));
   },[movieId, state])
 
 
